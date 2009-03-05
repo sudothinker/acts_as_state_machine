@@ -41,7 +41,7 @@ module ScottBarron                   #:nodoc:
           attr_reader :from, :to, :opts
           
           def initialize(opts)
-            @from, @to, @guard = opts[:from], opts[:to], opts[:guard]
+            @from, @to, @guard, @on_transition = opts[:from], opts[:to], opts[:guard], opts[:on_transition]
             @opts = opts
           end
           
@@ -49,6 +49,10 @@ module ScottBarron                   #:nodoc:
             @guard ? obj.send(:run_transition_action, @guard) : true
           end
 
+          def on_transition(obj)
+            @on_transition ? obj.send(:run_transition_action, @on_transition) : true
+          end
+          
           def perform(record)
             return false unless guard(record)
             loopback = record.current_state == to
@@ -56,13 +60,14 @@ module ScottBarron                   #:nodoc:
             next_state = states[to]
             old_state = states[record.current_state]
           
+            transition_return = on_transition(record)          
             next_state.entering(record) unless loopback
           
             record.update_attribute(record.class.state_column, to.to_s)
           
             next_state.entered(record) unless loopback
             old_state.exited(record) unless loopback
-            true
+            [true, transition_return]
           end
           
           def ==(obj)
@@ -91,8 +96,10 @@ module ScottBarron                   #:nodoc:
           
           def fire(record)
             next_states(record).each do |transition|
-              break true if transition.perform(record)
+              performed, ret_val = transition.perform(record)
+              return [true, ret_val] if performed
             end
+            return [false, nil]
           end
           
           def transitions(trans_opts)
