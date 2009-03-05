@@ -40,6 +40,13 @@ class ActsAsStateMachineTest < Test::Unit::TestCase
     end
   end
   
+  def test_state_events_were_set
+    [:new_message, :view, :reply, :close, :junk, :unjunk].each do |e|
+      assert Conversation.state_events.include?(e)
+    end
+    assert_equal 6, Conversation.state_events.size
+  end
+  
   def test_event_methods_created
     c = Conversation.create
     %w(new_message! view! reply! close! junk! unjunk!).each do |event|

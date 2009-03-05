@@ -177,6 +177,11 @@ module ScottBarron                   #:nodoc:
           read_inheritable_attribute(:states).keys
         end
         
+        # Returns an array of all known events.
+        def state_events
+          read_inheritable_attribute(:event_table).keys
+        end
+        
         # Define an event.  This takes a block which describes all valid transitions
         # for this event.
         #
