@@ -1,7 +1,8 @@
 class Conversation < ActiveRecord::Base
   attr_writer :can_close
   attr_accessor :read_enter, :read_exit, :read_after_first, :read_after_second,
-                :closed_after, :needs_attention_enter, :needs_attention_after
+                :closed_after, :needs_attention_enter, :needs_attention_after,
+                :transitioned
 
   acts_as_state_machine :initial => :needs_attention, :column => 'state_machine'
 
@@ -21,7 +22,7 @@ class Conversation < ActiveRecord::Base
   end
 
   event :view do
-    transitions :to => :read,              :from => [:needs_attention, :read]
+    transitions :to => :read,              :from => [:needs_attention, :read], :on_transition => :set_transition_attribute
   end
   
   event :reply do
@@ -41,6 +42,10 @@ class Conversation < ActiveRecord::Base
     transitions :to => :closed,            :from => :junk
   end
 
+  def set_transition_attribute
+    self.transitioned = "I have been fired on transition"
+  end
+  
   def can_close?
     @can_close
   end

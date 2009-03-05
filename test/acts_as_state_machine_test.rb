@@ -231,4 +231,10 @@ class ActsAsStateMachineTest < Test::Unit::TestCase
     assert_equal :junk, event.name
     assert_equal "finished", event.opts[:note]
   end
+  
+  def test_on_transition_event
+    c = Conversation.create
+    c.view!
+    assert_equal "I have been fired on transition", c.transitioned
+  end
 end
