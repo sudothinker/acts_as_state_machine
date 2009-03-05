@@ -234,7 +234,7 @@ class ActsAsStateMachineTest < Test::Unit::TestCase
   
   def test_on_transition_event
     c = Conversation.create
-    c.view!
+    assert_equal [true, 'I have been fired on transition'], c.view!
     assert_equal "I have been fired on transition", c.transitioned
   end
 end

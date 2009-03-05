@@ -206,7 +206,9 @@ module ScottBarron                   #:nodoc:
         #
         # This creates an instance method used for firing the event.  The method
         # created is the name of the event followed by an exclamation point (!).
-        # Example: <tt>order.close_order!</tt>.
+        # Example: 
+        #   <tt>order.close_order!</tt>.
+        #   => [transition_return_value, on_transition_return_value]
         def event(event, opts={}, &block)
           tt = read_inheritable_attribute(:transition_table)
           
