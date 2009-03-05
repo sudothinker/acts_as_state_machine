@@ -3,7 +3,11 @@
 This act gives an Active Record model the ability to act as a finite state
 machine (FSM).
 
-Acquire via subversion at:
+Acquire via git at:
+
+http://github.com/sudothinker/acts_as_state_machine.git
+
+Original repository available via subversion at:
 
 http://elitists.textdriven.com/svn/plugins/acts_as_state_machine/trunk
 
@@ -23,7 +27,7 @@ If prompted, use the user/pass anonymous/anonymous.
    end
 
    event :return do
-     transitions :to => :returned, :from => :closed
+     transitions :to => :returned, :from => :closed, :on_transition => :email_user
    end
  end
 

@@ -191,11 +191,18 @@ module ScottBarron                   #:nodoc:
         #   event :close_order do
         #     transitions :to => :closed, :from => :open
         #   end
+        #
+        #   event :reopen_order do
+        #     transitions :to => :open, :from => :closed, :on_transition => :email_user
+        #   end
         # end
         #
         # +transitions+ takes a hash where <tt>:to</tt> is the state to transition
         # to and <tt>:from</tt> is a state (or Array of states) from which this
-        # event can be fired.
+        # event can be fired. <tt>:on_transition</tt> is an optional parameter to 
+        # call a method whenever this transition occurs. <tt>:on_transition</tt> 
+        # is useful whenever there a multiple ways to enter a state and so :enter 
+        # and :exit will not suffice.
         #
         # This creates an instance method used for firing the event.  The method
         # created is the name of the event followed by an exclamation point (!).
