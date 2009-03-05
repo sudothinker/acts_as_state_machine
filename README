@@ -29,6 +29,11 @@ If prompted, use the user/pass anonymous/anonymous.
    event :return do
      transitions :to => :returned, :from => :closed, :on_transition => :email_user
    end
+   
+ protected
+   def email_user
+     Notifier.deliver_order_returned(self)
+   end
  end
 
  o = Order.create

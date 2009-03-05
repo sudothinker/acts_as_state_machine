@@ -194,7 +194,12 @@ module ScottBarron                   #:nodoc:
         #
         #   event :reopen_order do
         #     transitions :to => :open, :from => :closed, :on_transition => :email_user
-        #   end
+        #   end        
+        #
+        #  protected
+        #    def email_user
+        #      Notifier.deliver_order_returned(self)
+        #    end
         # end
         #
         # +transitions+ takes a hash where <tt>:to</tt> is the state to transition
