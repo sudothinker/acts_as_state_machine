@@ -3,7 +3,16 @@ require File.dirname(__FILE__) + '/test_helper'
 include ScottBarron::Acts::StateMachine
 
 class ActsAsStateMachineTest < Test::Unit::TestCase
-  fixtures :conversations
+  def setup
+    @first = create_conversation(:subject => "This is a test", :closed => false)
+    @first.update_attribute(:state_machine, "read")
+    @second = create_conversation(:subject => "Foo", :closed => false)
+    @second.update_attribute(:state_machine, "read")
+  end
+  
+  def teardown
+    Conversation.delete_all
+  end
   
   def test_no_initial_value_raises_exception
     assert_raise(NoInitialState) {
@@ -175,31 +184,32 @@ class ActsAsStateMachineTest < Test::Unit::TestCase
   def test_find_first_in_state
     c = Conversation.find_in_state(:first, :read)
     
-    assert_equal conversations(:first).id, c.id
+    assert_equal @first.id, c.id
   end
   
   def test_find_all_in_state_with_conditions
-    cs = Conversation.find_in_state(:all, :read, :conditions => ['subject = ?', conversations(:second).subject])
+    cs = Conversation.find_in_state(:all, :read, :conditions => ['subject = ?', @second.subject])
     
     assert_equal 1, cs.size
-    assert_equal conversations(:second).id, cs.first.id
+    assert_equal @second.id, cs.first.id
   end
   
   def test_find_first_in_state_with_conditions
-    c = Conversation.find_in_state(:first, :read, :conditions => ['subject = ?', conversations(:second).subject])
-    assert_equal conversations(:second).id, c.id
+    c = Conversation.find_in_state(:first, :read, :conditions => ['subject = ?', @second.subject])
+
+    assert_equal @second.id, c.id
   end
   
   def test_count_in_state
-    cnt0 = Conversation.count(['state_machine = ?', 'read'])
+    cnt0 = Conversation.count(:all, :conditions => {:state_machine => 'read'})
     cnt  = Conversation.count_in_state(:read)
     
     assert_equal cnt0, cnt
   end
   
   def test_count_in_state_with_conditions
-    cnt0 = Conversation.count(['state_machine = ? AND subject = ?', 'read', 'Foo'])
-    cnt  = Conversation.count_in_state(:read, ['subject = ?', 'Foo'])
+    cnt0 = Conversation.count(:all, :conditions => {:state_machine => "read", :subject => "Foo"})
+    cnt  = Conversation.count_in_state(:read, :all, {:conditions => {:subject => 'Foo'}})
     
     assert_equal cnt0, cnt
   end
